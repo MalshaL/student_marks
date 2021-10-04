@@ -10,7 +10,7 @@ package model;
 
 public class User {
 
-  enum UserLevel {
+  public enum UserLevel {
     STUDENT,
     LECTURER,
     ADMIN
@@ -26,6 +26,11 @@ public class User {
     this.username = username;
     this.password = pwd;
     this.userLevel = userLevel;
+  }
+
+  public User(String username, String pwd) {
+    this.username = username;
+    this.password = pwd;
   }
 
   public void setUserId(int id) {

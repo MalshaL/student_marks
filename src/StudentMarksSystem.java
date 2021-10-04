@@ -7,7 +7,7 @@
 
 import java.util.Scanner;
 import model.*;
-import view.*;
+import controller.*;
 
 
 public class StudentMarksSystem {
@@ -48,14 +48,14 @@ public class StudentMarksSystem {
       if(marksSystem.isLoggedIn()) {
         // display home view for user
       } else {
-        // display user login view
-        LoginView loginView = new LoginView();
-        loginView.displayView();
+        // handle the user login function
+        LoginController loginController = new LoginController();
+        ResponseObject response = loginController.handle();
+        if (response.getMessage().equals(ResponseCode.USER_EXIT)) {
+          marksSystem.setIsExiting(true);
+        }
       }
-      int input = scanner.nextInt();
-      if (input==0) {
-        marksSystem.setIsExiting(true);
-      }
+
     }
   }
 }
