@@ -7,6 +7,8 @@
 
 package view;
 
+
+import java.io.Console;
 import model.*;
 
 
@@ -48,7 +50,14 @@ public class LoginView extends View {
     printCentered("Enter username: ", this.getLeftPadding()-5, false);
     String username = UserInput.getScanner().nextLine();
     printCentered("Enter password: ", this.getLeftPadding()-5, false);
-    String password = UserInput.getScanner().nextLine();
+    Console console = System.console();
+    String password;
+    if (console == null) {
+      password = UserInput.getScanner().nextLine();
+    } else {
+      char[] pwd = console.readPassword();
+      password = new String(pwd);
+    }
     return new String[]{username, password};
   }
 
