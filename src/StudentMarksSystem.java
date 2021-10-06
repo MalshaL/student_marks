@@ -54,6 +54,10 @@ public class StudentMarksSystem {
         if (response.getMessage().equals(ResponseCode.USER_EXIT)) {
           marksSystem.setIsExiting(true);
         }
+        if (response.getMessage().equals(ResponseCode.USER_AUTH_SUCCESSFUL)) {
+          marksSystem.setLoggedInUser((User) response.getObject());
+          marksSystem.setIsLoggedIn(true);
+        }
       }
 
     }

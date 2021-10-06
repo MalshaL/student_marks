@@ -8,9 +8,9 @@
 package model;
 
 public enum ResponseCode {
-  USER_EXIT("User exiting system"),
-  USER_AUTH_SUCCESSFUL("User authentication successful"),
-  USER_AUTH_FAILED("User authentication failed"),
+  USER_EXIT("User exiting the system."),
+  USER_AUTH_SUCCESSFUL("User authentication is successful."),
+  USER_AUTH_FAILED("User authentication failed."),
   INVALID_INPUT("Input is invalid. Please try again.");
 
   private final String message;

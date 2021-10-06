@@ -15,7 +15,7 @@ import exception.*;
 
 public class LoginController implements Controller {
 
-  private LoginView loginView;
+  private final LoginView loginView;
 
   public LoginController() {
     loginView = new LoginView();
@@ -24,14 +24,20 @@ public class LoginController implements Controller {
   public ResponseObject handle() {
     // display the login view to user
     loginView.displayView();
-    // obtain user choice input
     ResponseObject response = new ResponseObject();
-    try {
-      response = handleUserChoice();
-    } catch (InvalidInputException e) {
-      // handle invalid input
-      response.setMessage(ResponseCode.INVALID_INPUT);
-      loginView.handleUserChoiceError(response);
+
+    boolean invalidInput = true;
+    while (invalidInput) {
+      try {
+        // obtain user choice input
+        loginView.promptUserChoice();
+        response = handleUserChoice();
+        invalidInput = false;
+      } catch (InvalidInputException e) {
+        // handle invalid input
+        response.setMessage(ResponseCode.INVALID_INPUT);
+        loginView.handleUserChoiceError(response);
+      }
     }
     return response;
   }
@@ -61,20 +67,38 @@ public class LoginController implements Controller {
   }
 
   private ResponseObject handleLogin() {
-    String[] details = loginView.promptUser();
-    // display confirmation in LoginView
+    ResponseObject response = new ResponseObject();
+    boolean invalidInput = true;
+
+    while(invalidInput) {
+      String[] details = loginView.promptUser();
+      if (details[0].equals("") || details[1].equals("")) {
+        response.setMessage(ResponseCode.INVALID_INPUT);
+        loginView.handleUserLoginStatus(response);
+      } else {
+        response = validateUser(details);
+        if (response.getMessage().equals(ResponseCode.USER_AUTH_FAILED)) {
+          loginView.handleUserLoginStatus(response);
+        } else {
+          // display confirmation in LoginView
+          loginView.handleUserLoginStatus(response);
+          invalidInput = false;
+        }
+      }
+    }
     // set logged in user details in main method
-    return validateUser(details);
+    return response;
   }
 
   private ResponseObject handleSystemExit() {
     ResponseObject response = new ResponseObject();
     response.setMessage(ResponseCode.USER_EXIT);
+    loginView.handleUserExit(response);
     return response;
   }
 
   private ResponseObject validateUser(String[] details) {
-    // get the user user list
+    // get the user list
     List<User> users = DataController.getInstance().getUserList();
     ResponseObject response = new ResponseObject();
 
