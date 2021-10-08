@@ -15,7 +15,7 @@ import exception.*;
 
 public class DataController implements Controller {
 
-  private static DataController dataController = new DataController();
+  private static final DataController dataController = new DataController();
   List<User> userList;
 
   private DataController() {
@@ -27,8 +27,8 @@ public class DataController implements Controller {
     return dataController;
   }
 
-  public int handle() {
-    return 0;
+  public ResponseObject handle() {
+    return null;
   }
 
   public List<User> getUserList() {

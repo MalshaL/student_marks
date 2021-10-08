@@ -5,7 +5,7 @@
 //   To start the system, begin by running this class.
 // *****************************************************************
 
-import java.util.Scanner;
+
 import model.*;
 import controller.*;
 
@@ -42,11 +42,12 @@ public class StudentMarksSystem {
 
   public static void main(String[] args) {
     StudentMarksSystem marksSystem = new StudentMarksSystem();
-    Scanner scanner = new Scanner(System.in);
 
     while(!marksSystem.isExiting()) {
       if(marksSystem.isLoggedIn()) {
         // display home view for user
+        HomeController homeController = new HomeController();
+        homeController.handle(marksSystem.getLoggedInUser());
       } else {
         // handle the user login function
         LoginController loginController = new LoginController();
