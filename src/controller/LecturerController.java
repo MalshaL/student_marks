@@ -7,6 +7,8 @@
 
 package controller;
 
+import java.util.*;
+import java.util.stream.Collectors;
 
 import exception.InvalidInputException;
 import model.*;
@@ -15,11 +17,62 @@ import view.*;
 
 public class LecturerController implements Controller {
 
-    private LecturerHomeView lecturerHomeView;
+    private final LecturerHomeView lecturerHomeView;
+    private User loggedInUser;
+    private List<TeachingUnit> teachingUnitsOfLecturer;
+    private List<Unit> unitsOfLecturer;
+
+    public LecturerController(User loggedInUser) {
+        this.setLoggedInUser(loggedInUser);
+        lecturerHomeView = new LecturerHomeView();
+        this.setTeachingUnitsOfLecturer();
+        this.setUnitsOfLecturer();
+    }
+
+    public User getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    public void setLoggedInUser(User loggedInUser) {
+        this.loggedInUser = loggedInUser;
+    }
+
+    public List<TeachingUnit> getTeachingUnitsOfLecturer() {
+        return teachingUnitsOfLecturer;
+    }
+
+    public void setTeachingUnitsOfLecturer() {
+        List<TeachingUnit> teachingUnits = DataController.getInstance().getTeachingUnits();
+        if (teachingUnits.isEmpty()) {
+            this.teachingUnitsOfLecturer = Collections.emptyList();
+        } else {
+            String lecturerId = this.getLoggedInUser().getUserId();
+            this.teachingUnitsOfLecturer = teachingUnits
+                    .stream()
+                    .filter(unit -> unit.getLecturerId().equals(lecturerId))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public List<Unit> getUnitsOfLecturer() {
+        return unitsOfLecturer;
+    }
+
+    public void setUnitsOfLecturer() {
+        List<TeachingUnit> teachingUnits = this.getTeachingUnitsOfLecturer();
+        if (teachingUnits.isEmpty()) {
+            this.unitsOfLecturer = Collections.emptyList();
+        } else {
+            List<String> unitIdList = teachingUnits
+                    .stream()
+                    .map(TeachingUnit::getLecturerId)
+                    .collect(Collectors.toList());
+            this.unitsOfLecturer = getUnitsInList(unitIdList);
+        }
+    }
 
     public ResponseObject handle() {
         // show options for lecturer
-        lecturerHomeView = new LecturerHomeView();
         lecturerHomeView.displayView();
         ResponseObject response = new ResponseObject();
 
@@ -83,7 +136,17 @@ public class LecturerController implements Controller {
     }
 
     private ResponseObject handleViewUnits() {
-        return null;
+        ResponseObject response = new ResponseObject();
+        List<Unit> unitsOfLecturer = this.getUnitsOfLecturer();
+        if (unitsOfLecturer.isEmpty()) {
+            // inform that no units were found for user
+        } else {
+            // print unit list
+        }
+        // display back option to go to previous screen
+        response.setObject(unitsOfLecturer);
+        response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
+        return response;
     }
 
     private ResponseObject handleAddGrades() {
@@ -96,5 +159,17 @@ public class LecturerController implements Controller {
 
     private ResponseObject handleUpdateGrades() {
         return null;
+    }
+
+    private List<Unit> getUnitsInList(List<String> unitIds) {
+        List<Unit> allUnits = DataController.getInstance().getUnitList();
+        if (allUnits.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // convert list to a set to reduce traverse time
+        Set<String> ids = new HashSet<>(unitIds);
+        return allUnits
+                .stream().filter(unit -> ids.contains(unit.getUnitId()))
+                .collect(Collectors.toList());
     }
 }

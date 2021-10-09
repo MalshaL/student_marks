@@ -45,12 +45,14 @@ public class DataController implements Controller {
   }
 
   public void setUserList() {
-    User user1 = new User(1, "admin", "admin", User.UserLevel.ADMIN);
-    User user2 = new User(2, "student", "student", User.UserLevel.STUDENT);
-    User user3 = new User(3, "lec", "lec", User.UserLevel.LECTURER);
+    User user1 = new User("1", "admin", "admin", User.UserLevel.ADMIN);
+    User user2 = new User("2", "student", "student", User.UserLevel.STUDENT);
+    User user3 = new User("12001", "John", "john", User.UserLevel.LECTURER);
+    User user4 = new User("12002", "Anne", "anne", User.UserLevel.LECTURER);
     userList.add(user1);
     userList.add(user2);
     userList.add(user3);
+    userList.add(user4);
   }
 
   public List<Unit> getUnitList() {
@@ -88,10 +90,10 @@ public class DataController implements Controller {
   }
 
   public void setLecturerList() {
-    Lecturer lecturer1 = new Lecturer(12001, "John", "Doe");
-    Lecturer lecturer2 = new Lecturer(12002, "Anne", "Cooper");
-    Lecturer lecturer3 = new Lecturer(12003, "Jane", "Bing");
-    Lecturer lecturer4 = new Lecturer(12004, "Peter", "Milburn");
+    Lecturer lecturer1 = new Lecturer("12001", "John", "Doe");
+    Lecturer lecturer2 = new Lecturer("12002", "Anne", "Cooper");
+    Lecturer lecturer3 = new Lecturer("12003", "Jane", "Bing");
+    Lecturer lecturer4 = new Lecturer("12004", "Peter", "Milburn");
     lecturerList.add(lecturer1);
     lecturerList.add(lecturer2);
     lecturerList.add(lecturer3);

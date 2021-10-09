@@ -16,12 +16,12 @@ public class User {
     ADMIN
   }
 
-  private int userId;
+  private String userId;
   private String username;
   private String password;
   private UserLevel userLevel;
 
-  public User(int id, String username, String pwd, UserLevel userLevel) {
+  public User(String id, String username, String pwd, UserLevel userLevel) {
     this.userId = id;
     this.username = username;
     this.password = pwd;
@@ -33,11 +33,11 @@ public class User {
     this.password = pwd;
   }
 
-  public void setUserId(int id) {
+  public void setUserId(String id) {
     this.userId = id;
   }
 
-  public int getUserId() {
+  public String getUserId() {
     return this.userId;
   }
 

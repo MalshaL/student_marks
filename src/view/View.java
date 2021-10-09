@@ -107,6 +107,7 @@ public abstract class View {
   }
 
   protected void printUserPrompt(String[] options) {
+//    System.out.format();
       printCentered(INPUT_PROMPT +"(0-"+options.length+") :",
               this.getLeftPadding()-5, false);
   }

@@ -14,30 +14,29 @@ import view.*;
 
 public class HomeController implements Controller {
 
-    private User.UserLevel userLevel;
+    private User loggedInUser;
 
-    public HomeController() {
+    public HomeController(User loggedInUser) {
+        this.setLoggedInUser(loggedInUser);
+    }
+
+    public User getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    public void setLoggedInUser(User loggedInUser) {
+        this.loggedInUser = loggedInUser;
     }
 
     public ResponseObject handle() {
-        return null;
-    }
-
-    public void handle(User loggedInUser) {
-        this.setUserLevel(loggedInUser.getUserLevel());
+        User.UserLevel userLevel = loggedInUser.getUserLevel();
         if (userLevel.equals(User.UserLevel.LECTURER)) {
-            LecturerController lecturerController = new LecturerController();
+            LecturerController lecturerController = new LecturerController(loggedInUser);
             lecturerController.handle();
         } else {
             System.out.println("none");
         }
+        return null;
     }
 
-    public User.UserLevel getUserLevel() {
-        return userLevel;
-    }
-
-    public void setUserLevel(User.UserLevel userLevel) {
-        this.userLevel = userLevel;
-    }
 }
