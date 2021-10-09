@@ -1,7 +1,7 @@
 // *****************************************************************
-//   LoginController.java
+//   HomeController.java
 //
-//   This file contains the controller functions for Login screen.
+//   This file contains the controller functions for Home screen.
 // *****************************************************************
 
 
@@ -14,11 +14,9 @@ import view.*;
 
 public class HomeController implements Controller {
 
-    private HomeView homeView;
     private User.UserLevel userLevel;
 
     public HomeController() {
-        this.homeView = new HomeView();
     }
 
     public ResponseObject handle() {
@@ -27,7 +25,12 @@ public class HomeController implements Controller {
 
     public void handle(User loggedInUser) {
         this.setUserLevel(loggedInUser.getUserLevel());
-        homeView.showHomeView(loggedInUser.getUserLevel());
+        if (userLevel.equals(User.UserLevel.LECTURER)) {
+            LecturerController lecturerController = new LecturerController();
+            lecturerController.handle();
+        } else {
+            System.out.println("none");
+        }
     }
 
     public User.UserLevel getUserLevel() {

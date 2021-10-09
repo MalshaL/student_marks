@@ -19,28 +19,21 @@ public class LoginView extends View {
 
   // constructor
   public LoginView() {
-    // set the default left padding value
-    this.setLeftPadding();
+
   }
 
   public void displayView() {
     printLineBreak();
     printStarBorder();
-    printCentered(SYSTEM_NAME, true);
+    printCentered(FontColors.ANSI_BLUE.getValue() + SYSTEM_NAME + FontColors.ANSI_RESET.getValue(),
+            true);
     printStarBorder();
     printLineBreak();
-    printOptions();
+    printOptions(OPTIONS);
   }
 
   public void promptUserChoice() {
-    printCentered(INPUT_PROMPT +"(0-"+OPTIONS.length+") :",
-            this.getLeftPadding()-5, false);
-  }
-
-  public void handleUserChoiceError(ResponseObject response) {
-    printCentered(FontColors.ANSI_RED.getValue() +
-                    response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-            this.getLeftPadding()-10, true);
+    printUserPrompt(OPTIONS);
   }
 
   public String[] promptUser() {
@@ -73,19 +66,6 @@ public class LoginView extends View {
     }
   }
 
-  public void handleUserExit(ResponseObject response) {
-    printCentered(FontColors.ANSI_GREEN.getValue() +
-                    response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-            this.getLeftPadding()-10, true);
-  }
 
-  private void printOptions() {
-    for (int i=0; i<OPTIONS.length; i++) {
-      printCentered((i+1)+". "+OPTIONS[i], true);
-    }
-    printLineBreak();
-    printCentered("0. "+ EXIT_OPTION, true);
-    printLineBreak();
-  }
 
 }

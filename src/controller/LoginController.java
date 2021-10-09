@@ -36,7 +36,7 @@ public class LoginController implements Controller {
       } catch (InvalidInputException e) {
         // handle invalid input
         response.setMessage(ResponseCode.INVALID_INPUT);
-        loginView.handleUserChoiceError(response);
+        loginView.printUserChoiceError(response);
       }
     }
     return response;
