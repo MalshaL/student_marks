@@ -11,10 +11,12 @@ import model.ResponseObject;
 
 public abstract class View {
 
+  // size of the left margin of 10 spaces
+  protected static final String MARGIN_LEFT = "%10s";
   // width of the borders of the view
-  protected static final int WIDTH = 120;
+  protected static final int WIDTH = 80;
   // name of the system to display
-  protected static final String SYSTEM_NAME = "Student Marks System";
+  protected static final String SYSTEM_NAME = "STUDENT MARKS SYSTEM";
   // unique option to exit the system
   protected static final String EXIT_OPTION = "Exit";
   // prompt asking for user's input
@@ -33,82 +35,84 @@ public abstract class View {
     protected String getValue() { return this.value; }
   }
 
-  // amount of space to leave on the left side when displaying text
-  private int leftPadding;
-
-  View() {
-    this.setLeftPadding();
-  }
-
-  public void setLeftPadding() {
-    // set the default left padding value
-    // to the half of total width-length of the system name
-    this.leftPadding = (WIDTH- SYSTEM_NAME.length())/2;
-  }
-
-  // return the padding value
-  public int getLeftPadding() {
-    return this.leftPadding;
-  }
-
   public void printUserChoiceError(ResponseObject response) {
-    printCentered(FontColors.ANSI_RED.getValue() +
-                    response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-            this.getLeftPadding()-10, true);
+    printCentered(response.getMessage().getMessage(), FontColors.ANSI_RED);
   }
 
   public void handleUserExit(ResponseObject response) {
-    printCentered(FontColors.ANSI_GREEN.getValue() +
-                    response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-            this.getLeftPadding()-10, true);
+    printStarBorder();
+    printCentered(response.getMessage().getMessage(), FontColors.ANSI_GREEN);
+    printStarBorder();
   }
 
   protected void printOptions(String[] options) {
     for (int i=0; i<options.length; i++) {
-      printCentered((i+1)+". "+options[i], true);
+      printOption((i+1)+". "+options[i]);
     }
-    printLineBreak();
-    printCentered("0. "+ EXIT_OPTION, true);
-    printLineBreak();
+    String exitOpt = "0. "+EXIT_OPTION;
+    printOption(exitOpt);
   }
 
-  protected void printCentered(String text, boolean addNewLine) {
-    printCentered(text, this.getLeftPadding(), addNewLine);
+  private void printOption(String opt) {
+    int optLen = WIDTH-opt.length()-2-13;
+    System.out.printf(MARGIN_LEFT+"*\t\t"+opt+"%"+optLen+"s*\n", "", "");
   }
 
-  protected void printCentered(String text, int leftPadding, boolean addNewLine) {
+  protected void printCenteredHeader(String text) {
+    System.out.printf(MARGIN_LEFT+"*", "");
+    int leftPadding = (WIDTH-text.length()-2-6)/2;
     for (int i=0; i<leftPadding; i++) {
-      System.out.print(" ");
+      System.out.print("-");
     }
-    System.out.print(text);
-    if (addNewLine) printLineBreak();
+    System.out.printf("%3s%S%3s", "", text, "");
+    for (int i=0; i<leftPadding; i++) {
+      System.out.print("-");
+    }
+    System.out.print("*\n");
+  }
+
+  protected void printCentered(String text, FontColors color) {
+    System.out.printf(MARGIN_LEFT+"*", "");
+
+    int len = text.length();
+    text = text + (len%2!=0 ? " " : "");
+    int leftPadding = (WIDTH-len-2)/2;
+
+    text = color.getValue()+text+FontColors.ANSI_RESET.getValue();
+    System.out.printf("%"+leftPadding+"s"+text+"%"+leftPadding+"s", "", "");
+    System.out.print("*\n");
   }
 
   protected void printStarBorder() {
+    System.out.printf(MARGIN_LEFT, "");
     for (int i=0; i<WIDTH; i++) {
-      System.out.print(FontColors.ANSI_BLUE.getValue() + "*");
+      System.out.print("*");
     }
-    System.out.print(FontColors.ANSI_RESET.getValue() + "\n");
+    printLineBreak();
   }
 
-  protected void printCenteredLineBorder(String text) {
-    int length = text.length();
-    for (int i=0; i<leftPadding-5; i++) {
-      System.out.print(" ");
-    }
-    for (int i=0; i<length+10; i++) {
+  protected void printDashBorder() {
+    System.out.printf(MARGIN_LEFT+"*", "");
+    for (int i=0; i<WIDTH-2; i++) {
       System.out.print("-");
     }
-    System.out.print("\n");
+    System.out.println("*");
+  }
+
+  protected void printOnlyBorder() {
+    System.out.printf(MARGIN_LEFT+"*%"+(WIDTH-2)+"s*\n", "", "");
   }
 
   protected void printLineBreak() {
-    System.out.println("");
+    System.out.println();
   }
 
   protected void printUserPrompt(String[] options) {
-//    System.out.format();
-      printCentered(INPUT_PROMPT +"(0-"+options.length+") :",
-              this.getLeftPadding()-5, false);
+    String prompt = INPUT_PROMPT +"(0-"+options.length+") : ";
+    System.out.printf(MARGIN_LEFT+"*\t\t"+prompt, "");
+  }
+
+  protected void printInputPrompt(String text) {
+    System.out.printf(MARGIN_LEFT+"*\t\t"+text, "");
   }
 }

@@ -25,10 +25,11 @@ public class LoginView extends View {
   public void displayView() {
     printLineBreak();
     printStarBorder();
-    printCentered(FontColors.ANSI_BLUE.getValue() + SYSTEM_NAME + FontColors.ANSI_RESET.getValue(),
-            true);
+    printOnlyBorder();
+    printCenteredHeader(SYSTEM_NAME);
+    printOnlyBorder();
     printStarBorder();
-    printLineBreak();
+    printOnlyBorder();
     printOptions(OPTIONS);
   }
 
@@ -37,12 +38,12 @@ public class LoginView extends View {
   }
 
   public String[] promptUser() {
-    printLineBreak();
-    printCentered("Logging in", true);
-    printCenteredLineBorder("Logging in");
-    printCentered("Enter username: ", this.getLeftPadding()-5, false);
+    printStarBorder();
+    printCenteredHeader("Log in");
+    printStarBorder();
+    printInputPrompt("Enter username: ");
     String username = UserInput.getScanner().nextLine();
-    printCentered("Enter password: ", this.getLeftPadding()-5, false);
+    printInputPrompt("Enter password: ");
     Console console = System.console();
     String password;
     if (console == null) {
@@ -55,14 +56,10 @@ public class LoginView extends View {
   }
 
   public void handleUserLoginStatus(ResponseObject response) {
-    if (response.getMessage().equals(ResponseCode.USER_AUTH_SUCCESSFUL)){
-      printCentered( FontColors.ANSI_GREEN.getValue() +
-                      response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-              this.getLeftPadding()-10, true);
+    if (response.getMessage().equals(ResponseCode.USER_AUTH_SUCCESSFUL)) {
+      printCentered(response.getMessage().getMessage(), FontColors.ANSI_GREEN);
     } else {
-      printCentered(FontColors.ANSI_RED.getValue() +
-                      response.getMessage().getMessage() + FontColors.ANSI_RESET.getValue(),
-              this.getLeftPadding() - 10, true);
+      printCentered(response.getMessage().getMessage(), FontColors.ANSI_RED);
     }
   }
 

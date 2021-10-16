@@ -64,10 +64,13 @@ public class DataController implements Controller {
     Unit unit2 = new Unit("COMP2001", "Object Oriented Programming in Java");
     Unit unit3 = new Unit("COMP2002", "Functional Programming");
     Unit unit4 = new Unit("COMP1002", "Programming in Python");
+    Unit unit5 = new Unit("STAT1001", "Statistics and Probability");
     unitList.add(unit1);
     unitList.add(unit2);
     unitList.add(unit3);
     unitList.add(unit4);
+    unitList.add(unit5);
+    FileController.saveUnitData(unitList);
   }
 
   public List<TeachingUnit> getTeachingUnits() {

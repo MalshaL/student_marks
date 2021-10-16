@@ -8,13 +8,7 @@
 package model;
 
 
-import controller.DataController;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import controller.FileController;
 
 public class Unit {
 
@@ -40,5 +34,10 @@ public class Unit {
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;
+    }
+
+    public String getCsvRow() {
+        return this.getUnitId()+ FileController.CELL_SEPARATOR +
+                this.getUnitName();
     }
 }

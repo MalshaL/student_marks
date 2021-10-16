@@ -32,7 +32,7 @@ public class HomeController implements Controller {
         User.UserLevel userLevel = loggedInUser.getUserLevel();
         if (userLevel.equals(User.UserLevel.LECTURER)) {
             LecturerController lecturerController = new LecturerController(loggedInUser);
-            lecturerController.handle();
+            return lecturerController.handle();
         } else {
             System.out.println("none");
         }

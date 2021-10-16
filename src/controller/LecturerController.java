@@ -42,13 +42,18 @@ public class LecturerController implements Controller {
     }
 
     public void setTeachingUnitsOfLecturer() {
+        // get all units being taught at the university
         List<TeachingUnit> teachingUnits = DataController.getInstance().getTeachingUnits();
+        // set empty list if there are no units
         if (teachingUnits.isEmpty()) {
             this.teachingUnitsOfLecturer = Collections.emptyList();
         } else {
+            // get the current user's user id
             String lecturerId = this.getLoggedInUser().getUserId();
+            // get the list of units taught by the current user
             this.teachingUnitsOfLecturer = teachingUnits
                     .stream()
+                    // filter to get the units with the same user id
                     .filter(unit -> unit.getLecturerId().equals(lecturerId))
                     .collect(Collectors.toList());
         }
@@ -59,34 +64,44 @@ public class LecturerController implements Controller {
     }
 
     public void setUnitsOfLecturer() {
+        // get the list of teaching units assigned to the current user
         List<TeachingUnit> teachingUnits = this.getTeachingUnitsOfLecturer();
+        // set empty list if there are no units
         if (teachingUnits.isEmpty()) {
             this.unitsOfLecturer = Collections.emptyList();
         } else {
+            // get the list of unit Ids from the teaching unit list
             List<String> unitIdList = teachingUnits
                     .stream()
                     .map(TeachingUnit::getLecturerId)
                     .collect(Collectors.toList());
+            // extract the unit data for each unit Id in the above list
             this.unitsOfLecturer = getUnitsInList(unitIdList);
         }
     }
 
     public ResponseObject handle() {
-        // show options for lecturer
-        lecturerHomeView.displayView();
+        boolean systemExit = false;
         ResponseObject response = new ResponseObject();
 
-        boolean invalidInput = true;
-        while (invalidInput) {
-            try {
-                // obtain user choice input
-                lecturerHomeView.promptUserChoice();
-                response = handleUserChoice();
-                invalidInput = false;
-            } catch (InvalidInputException e) {
-                // handle invalid input
-                response.setMessage(ResponseCode.INVALID_INPUT);
-                lecturerHomeView.printUserChoiceError(response);
+        while (!systemExit) {
+            // show options for lecturer
+            lecturerHomeView.displayView();
+            boolean invalidInput = true;
+            while (invalidInput) {
+                try {
+                    // obtain user choice input
+                    lecturerHomeView.promptUserChoice();
+                    response = handleUserChoice();
+                    invalidInput = false;
+                    if(response.getMessage().equals(ResponseCode.USER_EXIT)) {
+                        systemExit = true;
+                    }
+                } catch (InvalidInputException e) {
+                    // handle invalid input
+                    response.setMessage(ResponseCode.INVALID_INPUT);
+                    lecturerHomeView.printUserChoiceError(response);
+                }
             }
         }
         return response;
@@ -137,16 +152,29 @@ public class LecturerController implements Controller {
 
     private ResponseObject handleViewUnits() {
         ResponseObject response = new ResponseObject();
-        List<Unit> unitsOfLecturer = this.getUnitsOfLecturer();
-        if (unitsOfLecturer.isEmpty()) {
-            // inform that no units were found for user
-        } else {
-            // print unit list
-        }
-        // display back option to go to previous screen
-        response.setObject(unitsOfLecturer);
+        // get the teaching units list of lecturer
+        List<TeachingUnit> teachingUnits = this.getTeachingUnitsOfLecturer();
+        // combine unit lists
+        List<String> unitNameList = teachingUnits
+                .stream()
+                .map(unit -> getUnitName(unit.getUnitId()))
+                .collect(Collectors.toList());
+        // print unit list
+        lecturerHomeView.displayUnitData(teachingUnits, unitNameList);
+        // wait for user to press enter after viewing results
+        UserInput.getScanner().nextLine();
+        response.setObject(teachingUnits);
         response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
         return response;
+    }
+
+    private String getUnitName(String unitId) {
+        for (Unit unit: DataController.getInstance().getUnitList()) {
+            if (unit.getUnitId().equals(unitId)) {
+                return unit.getUnitName();
+            }
+        }
+        return null;
     }
 
     private ResponseObject handleAddGrades() {
@@ -162,12 +190,15 @@ public class LecturerController implements Controller {
     }
 
     private List<Unit> getUnitsInList(List<String> unitIds) {
+        // get all units saved in the system
         List<Unit> allUnits = DataController.getInstance().getUnitList();
+        // set empty list if there are no units
         if (allUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        // convert list to a set to reduce traverse time
+        // convert unit Id list to a set to reduce traverse time
         Set<String> ids = new HashSet<>(unitIds);
+        // filter the unit list to get the units for the current user
         return allUnits
                 .stream().filter(unit -> ids.contains(unit.getUnitId()))
                 .collect(Collectors.toList());

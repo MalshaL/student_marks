@@ -47,7 +47,10 @@ public class StudentMarksSystem {
       if(marksSystem.isLoggedIn()) {
         // display home view for user
         HomeController homeController = new HomeController(marksSystem.getLoggedInUser());
-        homeController.handle();
+        ResponseObject response = homeController.handle();
+        if (response.getMessage().equals(ResponseCode.USER_EXIT)) {
+          marksSystem.setIsExiting(true);
+        }
       } else {
         // handle the user login function
         LoginController loginController = new LoginController();
