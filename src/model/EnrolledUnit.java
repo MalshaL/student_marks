@@ -24,7 +24,7 @@ public class EnrolledUnit {
         this.courseId = courseId;
         this.semesterId = semesterId;
         this.mark = 0;
-        this.grade = null;
+        this.grade = Grade.NA;
     }
 
     public EnrolledUnit(String unitId, String studentId, String courseId, String semesterId, double mark, Grade grade) {
@@ -85,16 +85,11 @@ public class EnrolledUnit {
     }
 
     public String getCsvRow() {
-        String grade = "";
-        if (this.getGrade()!=null) {
-            grade = this.getGrade().toString();
-        }
         return this.getUnitId() + FileController.CELL_SEPARATOR +
                 this.getStudentId() + FileController.CELL_SEPARATOR +
                 this.getCourseId() + FileController.CELL_SEPARATOR +
                 this.getSemesterId() + FileController.CELL_SEPARATOR +
                 this.getMark() + FileController.CELL_SEPARATOR +
-                grade;
-
+                this.getGrade().toString();
     }
 }

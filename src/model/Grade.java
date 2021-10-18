@@ -12,7 +12,8 @@ public enum Grade {
     DISTINCTION("D", 75, 84, 6),
     CREDIT("C", 65, 74, 5),
     PASS("P", 50, 64, 4),
-    FAIL("F", 0, 49, 0);
+    FAIL("F", 0, 49, 0),
+    NA("NA", 0, 0, 0);
 
     private final String notation;
     private final double lowerBound;

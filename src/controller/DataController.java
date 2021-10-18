@@ -105,10 +105,7 @@ public class DataController implements Controller {
   }
 
   public void setCourseList() {
-    Course c1 = new Course("ENG1001", "Bachelor of Computer Science");
-    Course c2 = new Course("ENG2001", "Master of Data Science");
-    courseList.add(c1);
-    courseList.add(c2);
+    FileController.getInstance().readCourseData();
   }
 
   public List<Semester> getSemesterList() {
@@ -116,9 +113,6 @@ public class DataController implements Controller {
   }
 
   public void setSemesterList() {
-    Semester s1 = new Semester("AU2021", "Autumn 2021");
-    Semester s2 = new Semester("SP2021", "Spring 2021");
-    this.semesterList.add(s1);
-    this.semesterList.add(s2);
+    FileController.getInstance().readSemesterData();
   }
 }

@@ -18,7 +18,6 @@ public class FileController implements Controller {
     private static final String UNIT_FILE = "data/unit.csv";
     private static final String TEACHING_UNIT_FILE = "data/teaching_unit.csv";
     private static final String ENROLLED_UNIT_FILE = "data/enrolled_unit.csv";
-    private static final String GRADE_FILE = "data/grade.csv";
     private static final String LECTURER_FILE = "data/lecturer.csv";
     private static final String STUDENT_FILE = "data/student.csv";
     private static final String COURSE_FILE = "data/course.csv";
@@ -77,7 +76,6 @@ public class FileController implements Controller {
         dataStream = dataStream + unitList.stream()
                         .map(Unit::getCsvRow)
                         .collect(Collectors.joining(ROW_SEPARATOR));
-        System.out.println(dataStream);
         writeData(dataStream, UNIT_FILE, append);
     }
 
@@ -101,6 +99,28 @@ public class FileController implements Controller {
                 .map(EnrolledUnit::getCsvRow)
                 .collect(Collectors.joining(ROW_SEPARATOR));
         writeData(dataStream, ENROLLED_UNIT_FILE, append);
+    }
+
+    public void writeCourseData(List<Course> courseList, boolean append) {
+        String dataStream = "";
+        if (!append) {
+            dataStream = getCourseHeaders() + ROW_SEPARATOR;
+        }
+        dataStream = dataStream + courseList.stream()
+                .map(Course::getCsvRow)
+                .collect(Collectors.joining(ROW_SEPARATOR));
+        writeData(dataStream, COURSE_FILE, append);
+    }
+
+    public void writeSemesterData(List<Semester> semesterList, boolean append) {
+        String dataStream = "";
+        if (!append) {
+            dataStream = getSemesterHeaders() + ROW_SEPARATOR;
+        }
+        dataStream = dataStream + semesterList.stream()
+                .map(Semester::getCsvRow)
+                .collect(Collectors.joining(ROW_SEPARATOR));
+        writeData(dataStream, SEMESTER_FILE, append);
     }
 
     private void writeData(String dataStream, String fileName, boolean append) {
@@ -167,16 +187,28 @@ public class FileController implements Controller {
         List<EnrolledUnit> enrolledUnits = new ArrayList<>();
         List<String[]> itemList = readData(ENROLLED_UNIT_FILE);
         for (String[] items: itemList) {
-            // set grade to null in case it is empty in the file
-            // grade is empty when the student has not yet completed the module
-            Grade grade = null;
-            if (!items[5].equals("")) {
-                grade = Grade.valueOf(items[5]);
-            }
             enrolledUnits.add(new EnrolledUnit(items[0], items[1], items[2], items[3],
-                    Double.parseDouble(items[4]), grade));
+                    Double.parseDouble(items[4]), Grade.valueOf(items[5])));
         }
         return enrolledUnits;
+    }
+
+    public List<Course> readCourseData() {
+        List<Course> courseList = new ArrayList<>();
+        List<String[]> itemList = readData(COURSE_FILE);
+        for (String[] items: itemList) {
+            courseList.add(new Course(items[0], items[1]));
+        }
+        return courseList;
+    }
+
+    public List<Semester> readSemesterData() {
+        List<Semester> semesterList = new ArrayList<>();
+        List<String[]> itemList = readData(SEMESTER_FILE);
+        for (String[] items: itemList) {
+            semesterList.add(new Semester(items[0], items[1]));
+        }
+        return semesterList;
     }
 
     private List<String[]> readData(String fileName) {
@@ -235,5 +267,15 @@ public class FileController implements Controller {
                 "Semester Id" + FileController.CELL_SEPARATOR +
                 "Mark" + FileController.CELL_SEPARATOR +
                 "Grade";
+    }
+
+    private String getCourseHeaders() {
+        return "Course Id" + FileController.CELL_SEPARATOR +
+                "Course Name";
+    }
+
+    private String getSemesterHeaders() {
+        return "Semester Id" + FileController.CELL_SEPARATOR +
+                "Semester Name";
     }
 }
