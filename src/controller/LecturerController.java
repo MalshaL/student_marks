@@ -154,7 +154,7 @@ public class LecturerController implements Controller {
         ResponseObject response = new ResponseObject();
         // get the teaching units list of lecturer
         List<TeachingUnit> teachingUnits = this.getTeachingUnitsOfLecturer();
-        // combine unit lists
+        // get the unit names of teaching units
         List<String> unitNameList = teachingUnits
                 .stream()
                 .map(unit -> getUnitName(unit.getUnitId()))
@@ -178,11 +178,69 @@ public class LecturerController implements Controller {
     }
 
     private ResponseObject handleAddGrades() {
+
         return null;
     }
 
     private ResponseObject handleViewGrades() {
-        return null;
+        ResponseObject response = new ResponseObject();
+        // get the teaching units list of lecturer
+        List<TeachingUnit> teachingUnits = this.getTeachingUnitsOfLecturer();
+        // get the unit names of teaching units
+        List<String> unitNameList = teachingUnits
+                .stream()
+                .map(unit -> getUnitName(unit.getUnitId()))
+                .collect(Collectors.toList());
+
+        // user has selected to go the previous screen
+        boolean goBack = false;
+        // until the back option is not selected
+        while (!goBack) {
+            // show unit options for lecturer
+            lecturerHomeView.displayUnitSelection(teachingUnits, unitNameList);
+            boolean invalidInput = true;
+            while (invalidInput) {
+                // obtain user choice input
+                // print input prompt to user
+                lecturerHomeView.promptUserChoice(unitNameList.size());
+                // get user input
+                String input = UserInput.getScanner().nextLine();
+                try {
+                    // attempt to convert input to int
+                    int selectedUnit = Integer.parseInt(input);
+                    // check if input is within range
+                    if (0 <= selectedUnit && selectedUnit <= teachingUnits.size()) {
+                        // set invalid flag to false to indicate user input is valid
+                        invalidInput = false;
+                        // if user has selected to cancel and go back
+                        if (selectedUnit == 0) {
+                            goBack = true;
+                        } else {
+                            // get unit Id for selected unit
+                            String unitId = teachingUnits.get(selectedUnit - 1).getUnitId();
+                            // get enrolled unit list for selected unit
+                            List<EnrolledUnit> enrolledUnits = getEnrolledUnits(unitId);
+                            // get average mark for the unit
+                            double avg = getAverageUnitMark(enrolledUnits);
+                            // display grades for selected unit
+                            lecturerHomeView.displayUnitGrades(enrolledUnits,
+                                    unitNameList.get(selectedUnit - 1), unitId, avg);
+                            // wait for user to press enter after viewing results
+                            UserInput.getScanner().nextLine();
+                        }
+                        response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
+                    } else {
+                        response.setMessage(ResponseCode.INVALID_INPUT);
+                        lecturerHomeView.printUserChoiceError(response);
+                    }
+                } catch (NumberFormatException e) {
+                    // handle invalid input
+                    response.setMessage(ResponseCode.INVALID_INPUT);
+                    lecturerHomeView.printUserChoiceError(response);
+                }
+            }
+        }
+        return response;
     }
 
     private ResponseObject handleUpdateGrades() {
@@ -202,5 +260,21 @@ public class LecturerController implements Controller {
         return allUnits
                 .stream().filter(unit -> ids.contains(unit.getUnitId()))
                 .collect(Collectors.toList());
+    }
+
+    private List<EnrolledUnit> getEnrolledUnits(String unitId) {
+        // get all enrolled units saved in the system
+        List<EnrolledUnit> units = DataController.getInstance().getEnrolledUnits();
+        // set empty list if there are no units
+        if (units.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // get list of enrolled units with same unit id
+        return units.stream().filter(unit -> unit.getUnitId().equals(unitId)).collect(Collectors.toList());
+    }
+
+    private double getAverageUnitMark(List<EnrolledUnit> units) {
+        double total = units.stream().mapToDouble(EnrolledUnit::getMark).sum();
+        return total/units.size();
     }
 }

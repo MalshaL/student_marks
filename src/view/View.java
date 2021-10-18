@@ -21,6 +21,8 @@ public abstract class View {
   protected static final String SYSTEM_NAME = "STUDENT MARKS SYSTEM";
   // unique option to exit the system
   protected static final String EXIT_OPTION = "Exit";
+  // unique option to go to the previous screen
+  protected static final String BACK_OPTION = "Back";
   // prompt asking for user's input
   protected static final String INPUT_PROMPT = "Enter your choice ";
 
@@ -47,11 +49,11 @@ public abstract class View {
     printStarBorder();
   }
 
-  protected void printOptions(String[] options) {
+  protected void printOptions(String[] options, String exitOption) {
     for (int i=0; i<options.length; i++) {
       printOption((i+1)+". "+options[i]);
     }
-    String exitOpt = "0. "+EXIT_OPTION;
+    String exitOpt = "0. "+exitOption;
     printOption(exitOpt);
   }
 
@@ -109,8 +111,8 @@ public abstract class View {
     System.out.println();
   }
 
-  protected void printUserPrompt(String[] options) {
-    String prompt = INPUT_PROMPT +"(0-"+options.length+") : ";
+  protected void printUserPrompt(int optionCount) {
+    String prompt = INPUT_PROMPT +"(0-"+optionCount+") : ";
     System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+prompt, "", "");
   }
 

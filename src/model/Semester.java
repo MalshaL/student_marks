@@ -14,10 +14,13 @@ public class Semester {
 
     private String semesterId;
     private String semesterName;
+    // boolean variable to indicate if the semester is currently in session
+    private boolean current;
 
-    public Semester(String semesterId, String semesterName) {
+    public Semester(String semesterId, String semesterName, boolean current) {
         this.semesterId = semesterId;
         this.semesterName = semesterName;
+        this.current = current;
     }
 
     public String getSemesterId() {
@@ -36,8 +39,17 @@ public class Semester {
         this.semesterName = semesterName;
     }
 
+    public boolean isCurrent() {
+        return current;
+    }
+
+    public void setCurrent(boolean current) {
+        this.current = current;
+    }
+
     public String getCsvRow() {
         return this.getSemesterId() + FileController.CELL_SEPARATOR +
-                this.getSemesterName();
+                this.getSemesterName() + FileController.CELL_SEPARATOR +
+                this.isCurrent();
     }
 }

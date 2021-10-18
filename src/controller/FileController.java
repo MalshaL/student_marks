@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileController implements Controller {
-
+    // create a single instance for the class
     public static final FileController fileController = new FileController();
 
+    // constant values for delimiters for writing csv data
     public static final String CELL_SEPARATOR = ",";
     public static final String ROW_SEPARATOR = System.getProperty("line.separator");
 
+    // file names where data is stored
     private static final String USER_FILE = "data/user.csv";
     private static final String UNIT_FILE = "data/unit.csv";
     private static final String TEACHING_UNIT_FILE = "data/teaching_unit.csv";
@@ -27,6 +29,7 @@ public class FileController implements Controller {
         // private constructor for singleton
     }
 
+    // return the single instance of the class (Singleton)
     public static FileController getInstance() {
         return fileController;
     }
@@ -35,7 +38,7 @@ public class FileController implements Controller {
         return null;
     }
 
-    public void writeUserData(List<User> userList, boolean append) {
+    public void writeUserData(List<User> userList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getUserHeaders() + ROW_SEPARATOR;
@@ -46,7 +49,7 @@ public class FileController implements Controller {
         writeData(dataStream, USER_FILE, append);
     }
 
-    public void writePersonData(List<Person> personList, boolean append, User.UserLevel personType) {
+    public void writePersonData(List<Person> personList, boolean append, User.UserLevel personType) throws IOException {
         String dataStream = "";
         String fileName = "";
         // check the person type to set the file name
@@ -68,7 +71,7 @@ public class FileController implements Controller {
         writeData(dataStream, fileName, append);
     }
 
-    public void writeUnitData(List<Unit> unitList, boolean append) {
+    public void writeUnitData(List<Unit> unitList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getUnitHeaders() + ROW_SEPARATOR;
@@ -79,7 +82,7 @@ public class FileController implements Controller {
         writeData(dataStream, UNIT_FILE, append);
     }
 
-    public void writeTeachingUnitData(List<TeachingUnit> unitList, boolean append) {
+    public void writeTeachingUnitData(List<TeachingUnit> unitList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getTeachingUnitHeaders() + ROW_SEPARATOR;
@@ -90,7 +93,7 @@ public class FileController implements Controller {
         writeData(dataStream, TEACHING_UNIT_FILE, append);
     }
 
-    public void writeEnrolledUnitData(List<EnrolledUnit> unitList, boolean append) {
+    public void writeEnrolledUnitData(List<EnrolledUnit> unitList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getEnrolledUnitHeaders() + ROW_SEPARATOR;
@@ -101,7 +104,7 @@ public class FileController implements Controller {
         writeData(dataStream, ENROLLED_UNIT_FILE, append);
     }
 
-    public void writeCourseData(List<Course> courseList, boolean append) {
+    public void writeCourseData(List<Course> courseList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getCourseHeaders() + ROW_SEPARATOR;
@@ -112,7 +115,7 @@ public class FileController implements Controller {
         writeData(dataStream, COURSE_FILE, append);
     }
 
-    public void writeSemesterData(List<Semester> semesterList, boolean append) {
+    public void writeSemesterData(List<Semester> semesterList, boolean append) throws IOException {
         String dataStream = "";
         if (!append) {
             dataStream = getSemesterHeaders() + ROW_SEPARATOR;
@@ -123,7 +126,7 @@ public class FileController implements Controller {
         writeData(dataStream, SEMESTER_FILE, append);
     }
 
-    private void writeData(String dataStream, String fileName, boolean append) {
+    private void writeData(String dataStream, String fileName, boolean append) throws IOException {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(fileName), append));
             bufferedWriter.write(dataStream);
@@ -131,13 +134,11 @@ public class FileController implements Controller {
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException e) {
-            //TODO: handle error
-            System.out.println("Error in writing file");
-            e.printStackTrace();
+            throw new IOException();
         }
     }
 
-    public List<User> readUserData() {
+    public List<User> readUserData() throws IOException {
         List<User> userList = new ArrayList<>();
         List<String[]> itemList = readData(USER_FILE);
         for (String[] items: itemList) {
@@ -146,7 +147,7 @@ public class FileController implements Controller {
         return userList;
     }
 
-    public List<Person> readPersonData(User.UserLevel personType) {
+    public List<Person> readPersonData(User.UserLevel personType) throws IOException {
         List<Person> personList = new ArrayList<>();
 
         // read data and create objects according to user type
@@ -165,7 +166,7 @@ public class FileController implements Controller {
         return personList;
     }
 
-    public List<Unit> readUnitData() {
+    public List<Unit> readUnitData() throws IOException {
         List<Unit> unitList = new ArrayList<>();
         List<String[]> itemList = readData(UNIT_FILE);
         for (String[] items: itemList) {
@@ -174,7 +175,7 @@ public class FileController implements Controller {
         return unitList;
     }
 
-    public List<TeachingUnit> readTeachingUnitData() {
+    public List<TeachingUnit> readTeachingUnitData() throws IOException {
         List<TeachingUnit> teachingUnits = new ArrayList<>();
         List<String[]> itemList = readData(TEACHING_UNIT_FILE);
         for (String[] items: itemList) {
@@ -183,7 +184,7 @@ public class FileController implements Controller {
         return teachingUnits;
     }
 
-    public List<EnrolledUnit> readEnrolledUnitData() {
+    public List<EnrolledUnit> readEnrolledUnitData() throws IOException {
         List<EnrolledUnit> enrolledUnits = new ArrayList<>();
         List<String[]> itemList = readData(ENROLLED_UNIT_FILE);
         for (String[] items: itemList) {
@@ -193,7 +194,7 @@ public class FileController implements Controller {
         return enrolledUnits;
     }
 
-    public List<Course> readCourseData() {
+    public List<Course> readCourseData() throws IOException {
         List<Course> courseList = new ArrayList<>();
         List<String[]> itemList = readData(COURSE_FILE);
         for (String[] items: itemList) {
@@ -202,16 +203,16 @@ public class FileController implements Controller {
         return courseList;
     }
 
-    public List<Semester> readSemesterData() {
+    public List<Semester> readSemesterData() throws IOException {
         List<Semester> semesterList = new ArrayList<>();
         List<String[]> itemList = readData(SEMESTER_FILE);
         for (String[] items: itemList) {
-            semesterList.add(new Semester(items[0], items[1]));
+            semesterList.add(new Semester(items[0], items[1], Boolean.parseBoolean(items[2])));
         }
         return semesterList;
     }
 
-    private List<String[]> readData(String fileName) {
+    private List<String[]> readData(String fileName) throws IOException {
         List<String[]> itemList = new ArrayList<>();
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
@@ -228,9 +229,7 @@ public class FileController implements Controller {
             }
             bufferedReader.close();
         } catch (IOException e) {
-            //TODO: handle error
-            System.out.println("Error in reading file");
-            e.printStackTrace();
+            throw new IOException();
         }
         return itemList;
     }
@@ -276,6 +275,7 @@ public class FileController implements Controller {
 
     private String getSemesterHeaders() {
         return "Semester Id" + FileController.CELL_SEPARATOR +
-                "Semester Name";
+                "Semester Name" + FileController.CELL_SEPARATOR +
+                "Current";
     }
 }

@@ -30,11 +30,11 @@ public class LoginView extends View {
     printOnlyBorder();
     printStarBorder();
     printOnlyBorder();
-    printOptions(OPTIONS);
+    printOptions(OPTIONS, EXIT_OPTION);
   }
 
   public void promptUserChoice() {
-    printUserPrompt(OPTIONS);
+    printUserPrompt(OPTIONS.length);
   }
 
   public String[] promptUser() {
