@@ -8,6 +8,8 @@
 package model;
 
 
+import controller.FileController;
+
 public class User {
 
   public enum UserLevel {
@@ -63,6 +65,13 @@ public class User {
 
   public UserLevel getUserLevel() {
     return this.userLevel;
+  }
+
+  public String getCsvRow() {
+    return this.getUserId() + FileController.CELL_SEPARATOR +
+            this.getUsername() + FileController.CELL_SEPARATOR +
+            this.getPassword() + FileController.CELL_SEPARATOR +
+            this.getUserLevel().toString();
   }
 
 }

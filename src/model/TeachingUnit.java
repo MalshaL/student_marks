@@ -9,6 +9,8 @@
 package model;
 
 
+import controller.FileController;
+
 public class TeachingUnit {
 
     private String unitId;
@@ -53,5 +55,12 @@ public class TeachingUnit {
 
     public void setLecturerId(String lecturerId) {
         this.lecturerId = lecturerId;
+    }
+
+    public String getCsvRow() {
+        return this.getUnitId() + FileController.CELL_SEPARATOR +
+                this.getCourseId() + FileController.CELL_SEPARATOR +
+                this.getSemesterId() + FileController.CELL_SEPARATOR +
+                this.getLecturerId();
     }
 }

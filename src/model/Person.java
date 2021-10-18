@@ -8,6 +8,8 @@
 package model;
 
 
+import controller.FileController;
+
 public abstract class Person {
 
     private String id;
@@ -51,5 +53,11 @@ public abstract class Person {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCsvRow() {
+        return this.getId() + FileController.CELL_SEPARATOR +
+                this.getFirstName() + FileController.CELL_SEPARATOR +
+                this.getLastName();
     }
 }

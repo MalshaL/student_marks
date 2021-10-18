@@ -52,6 +52,7 @@ public class StudentMarksSystem {
           marksSystem.setIsExiting(true);
         }
       } else {
+        // TODO: call datacontroller handle to run data load, show errors
         // handle the user login function
         LoginController loginController = new LoginController();
         ResponseObject response = loginController.handle();

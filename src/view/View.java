@@ -13,6 +13,8 @@ public abstract class View {
 
   // size of the left margin of 10 spaces
   protected static final String MARGIN_LEFT = "%10s";
+  // set the size of the tab to 12 spaces
+  protected static final int TAB = 12;
   // width of the borders of the view
   protected static final int WIDTH = 80;
   // name of the system to display
@@ -54,8 +56,8 @@ public abstract class View {
   }
 
   private void printOption(String opt) {
-    int optLen = WIDTH-opt.length()-2-13;
-    System.out.printf(MARGIN_LEFT+"*\t\t"+opt+"%"+optLen+"s*\n", "", "");
+    int optLen = WIDTH-opt.length()-2-TAB;
+    System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+opt+"%"+optLen+"s*\n", "", "", "");
   }
 
   protected void printCenteredHeader(String text) {
@@ -109,10 +111,10 @@ public abstract class View {
 
   protected void printUserPrompt(String[] options) {
     String prompt = INPUT_PROMPT +"(0-"+options.length+") : ";
-    System.out.printf(MARGIN_LEFT+"*\t\t"+prompt, "");
+    System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+prompt, "", "");
   }
 
   protected void printInputPrompt(String text) {
-    System.out.printf(MARGIN_LEFT+"*\t\t"+text, "");
+    System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+text, "", "");
   }
 }

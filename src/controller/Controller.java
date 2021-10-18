@@ -12,5 +12,5 @@ import model.*;
 
 public interface Controller {
 
-  public ResponseObject handle();
+  ResponseObject handle();
 }

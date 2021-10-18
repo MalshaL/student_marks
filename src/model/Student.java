@@ -8,9 +8,10 @@
 package model;
 
 
-public class Student {
+public class Student extends Person{
 
-  public void getStudent() {
-    System.out.println("ID and name");
+  public Student(String id, String firstName, String lastName) {
+    super(id, firstName, lastName);
   }
+
 }
