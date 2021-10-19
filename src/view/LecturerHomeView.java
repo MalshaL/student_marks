@@ -9,14 +9,17 @@ package view;
 
 import model.EnrolledUnit;
 import model.TeachingUnit;
+import model.Person;
 import model.Unit;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LecturerHomeView extends View {
 
-    private static final String[] OPTIONS = {"View My Units", "Add Student Grades",
-            "View Student Grades", "Update Student Grades"};
+    private static final String[] OPTIONS = {"View My Units",
+            "View Unit Grades", "View Student Grades", "Add/Update Student Grades"};
 
     public void displayView() {
         printStarBorder();
@@ -32,6 +35,10 @@ public class LecturerHomeView extends View {
 
     public void promptUserChoice(int optionCount) {
         printUserPrompt(optionCount);
+    }
+
+    public void promptUserChoice(String text) {
+        printInputPrompt(text);
     }
 
     public void displayUnitData(List<TeachingUnit> unitList, List<String> unitNames) {
@@ -55,10 +62,15 @@ public class LecturerHomeView extends View {
         printCentered("Press Enter to return to Home screen: ", FontColors.ANSI_RESET);
     }
 
-    public void displayUnitSelection(List<TeachingUnit> unitList, List<String> unitNames) {
+    public void displayUnitSelection(List<TeachingUnit> unitList, List<String> unitNames, boolean showUnitGrades) {
         printStarBorder();
-        printCentered("View grades", FontColors.ANSI_RESET);
-        printCentered("Select unit to view grades", FontColors.ANSI_RESET);
+        if (showUnitGrades) {
+            printCentered("View grades", FontColors.ANSI_RESET);
+            printCentered("Select unit to view grades", FontColors.ANSI_RESET);
+        } else {
+            printCentered("Update grades", FontColors.ANSI_RESET);
+            printCentered("Select unit to add/update grades", FontColors.ANSI_RESET);
+        }
         if (unitList.isEmpty()) {
             printCentered("No units have been currently allocated", FontColors.ANSI_RESET);
         } else {
@@ -95,6 +107,52 @@ public class LecturerHomeView extends View {
         printOnlyBorder();
         printCentered("Average Mark for Unit: "+String.format("%.2f", avg), FontColors.ANSI_RESET);
         printOnlyBorder();
-        printCentered("Press Enter to return to Home screen: ", FontColors.ANSI_RESET);
+        printCentered("Press Enter to return to previous screen: ", FontColors.ANSI_RESET);
+    }
+
+    public void displayStudentMarks(Person student, List<EnrolledUnit> enrolledUnits,
+                                    List<Unit> units, double avg, double gpa) {
+        String name = student.getFirstName() + " " +student.getLastName();
+
+        printStarBorder();
+        printCentered("Grade Report", FontColors.ANSI_RESET);
+        printOnlyBorder();
+        System.out.printf(MARGIN_LEFT+"* %-30s%"+(WIDTH-30-4)+"s *\n",
+                "", "STUDENT ID: "+student.getId(), "NAME: "+name);
+        printStarBorder();
+        System.out.printf(MARGIN_LEFT+"* %-10s%-25s%-20s%-10s%"+(WIDTH-65-4)+"s *\n",
+                "", "UNIT ID", "UNIT NAME", "SEMESTER ID", "MARK", "GRADE");
+        printDashBorder();
+        for (EnrolledUnit unit: enrolledUnits) {
+            Unit selectedUnit = units.stream()
+                    .filter(unit1 -> unit1.getUnitId().equals(unit.getUnitId())).findFirst().get();
+            System.out.printf(MARGIN_LEFT+"* %-10s%-25s%-20s%-10s%"+(WIDTH-65-4)+"s *\n",
+                    "", unit.getUnitId(), selectedUnit.getUnitName(),
+                    unit.getSemesterId(), unit.getMark(), unit.getGrade());
+        }
+        printOnlyBorder();
+        printCentered("Average Mark for Student: "+String.format("%.2f", avg), FontColors.ANSI_RESET);
+        printCentered("Student GPA: "+String.format("%.2f", gpa), FontColors.ANSI_RESET);
+        printDashBorder();
+    }
+
+    public void displayStudentMenu(int currentIndex, int studentCount) {
+        printOnlyBorder();
+        String prev = "[ - Previous Student";
+        String next = "] - Next Student";
+        List<String> options = new ArrayList<>();
+        // if first student, display only next option
+        if (currentIndex==0) {
+            options.add(next);
+        } else if (currentIndex==studentCount-1) {
+            // if last student, display only previous option
+            options.add(prev);
+        } else {
+            // show both options
+            options.add(prev);
+            options.add(next);
+        }
+        printCustomOptions(options.toArray(new String[0]));
+        printOnlyBorder();
     }
 }

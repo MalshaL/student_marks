@@ -170,7 +170,7 @@ public class FileController implements Controller {
         List<Unit> unitList = new ArrayList<>();
         List<String[]> itemList = readData(UNIT_FILE);
         for (String[] items: itemList) {
-            unitList.add(new Unit(items[0], items[1]));
+            unitList.add(new Unit(items[0], items[1], Integer.parseInt(items[2])));
         }
         return unitList;
     }
@@ -249,7 +249,8 @@ public class FileController implements Controller {
 
     private String getUnitHeaders() {
         return "Unit Id" + FileController.CELL_SEPARATOR +
-                "Unit Name";
+                "Unit Name" + FileController.CELL_SEPARATOR +
+                "Credits";
     }
 
     private String getTeachingUnitHeaders() {

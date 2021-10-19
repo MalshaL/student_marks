@@ -57,6 +57,15 @@ public abstract class View {
     printOption(exitOpt);
   }
 
+  // print option lists that do not use numerical input index
+  protected void printCustomOptions(String[] options) {
+    for (int i=0; i<options.length; i++) {
+      printOption(options[i]);
+    }
+    String exitOpt = "0 - "+ BACK_OPTION;
+    printOption(exitOpt);
+  }
+
   private void printOption(String opt) {
     int optLen = WIDTH-opt.length()-2-TAB;
     System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+opt+"%"+optLen+"s*\n", "", "", "");

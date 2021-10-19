@@ -43,7 +43,10 @@ public class LoginController implements Controller {
   }
 
   private ResponseObject handleUserChoice() throws InvalidInputException {
+    // get user input
     String input = UserInput.getScanner().nextLine();
+    // remove whitespace in input
+    input = input.replaceAll("\\s","");
     ResponseObject response;
     try {
       int intValue = Integer.parseInt(input);
