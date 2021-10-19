@@ -1,7 +1,7 @@
 // *****************************************************************
 //   DataController.java
 //
-//   This file contains the functions to handle filedata manipulation.
+//   This file contains the functions to handle data manipulation.
 // *****************************************************************
 
 
@@ -16,7 +16,10 @@ import exception.*;
 
 public class DataController implements Controller {
 
+  // singleton object for the class
   private static final DataController dataController = new DataController();
+
+  // lists to store app data
   List<User> userList;
   List<Unit> unitList;
   List<TeachingUnit> teachingUnits;
@@ -37,11 +40,13 @@ public class DataController implements Controller {
     semesterList = new ArrayList<>();
   }
 
+  // returns hte single object of the class
   public static DataController getInstance() {
     return dataController;
   }
 
   public ResponseObject handle() {
+    // loads data from all files
     ResponseObject response = new ResponseObject();
     try {
       // read all data from files
@@ -61,6 +66,7 @@ public class DataController implements Controller {
   }
 
   public ResponseObject writeAllData() {
+    // write all data in files when system is exiting
     ResponseObject response = new ResponseObject();
     try {
       FileController.getInstance().writeUserData(this.getUserList(), false);

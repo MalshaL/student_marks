@@ -70,15 +70,18 @@ public class LoginController implements Controller {
   }
 
   private ResponseObject handleLogin() {
+    // handle login of the user
     ResponseObject response = new ResponseObject();
     boolean invalidInput = true;
 
     while(invalidInput) {
       String[] details = loginView.promptUser();
+      // if input is empty
       if (details[0].equals("") || details[1].equals("")) {
         response.setMessage(ResponseCode.INVALID_INPUT);
         loginView.handleUserLoginStatus(response);
       } else {
+        // validate user from stored data
         response = validateUser(details);
         if (response.getMessage().equals(ResponseCode.USER_AUTH_FAILED)) {
           loginView.handleUserLoginStatus(response);
@@ -94,6 +97,7 @@ public class LoginController implements Controller {
   }
 
   private ResponseObject handleSystemExit() {
+    // handle when user chooses to exit
     ResponseObject response = new ResponseObject();
     response.setMessage(ResponseCode.USER_EXIT);
     loginView.handleUserExit(response);
@@ -118,6 +122,7 @@ public class LoginController implements Controller {
   }
 
   private User findUser(List<User> users, User authUser) {
+    // find the user form the list
     for (User u: users) {
       if (u.getUsername().equals(authUser.getUsername()) &&
           u.getPassword().equals(authUser.getPassword())) {

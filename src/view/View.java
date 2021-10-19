@@ -40,16 +40,25 @@ public abstract class View {
   }
 
   public void printUserChoiceError(ResponseObject response) {
+    // print error of user input
     printCentered(response.getMessage().getMessage(), FontColors.ANSI_RED);
   }
 
+  public void printUserChoiceInfo(ResponseObject response) {
+    // print information for user
+    printCentered(response.getMessage().getMessage(), FontColors.ANSI_BLUE);
+    printOnlyBorder();
+  }
+
   public void handleUserExit(ResponseObject response) {
+    // print exiting message
     printStarBorder();
     printCentered(response.getMessage().getMessage(), FontColors.ANSI_GREEN);
     printStarBorder();
   }
 
   protected void printOptions(String[] options, String exitOption) {
+    // print array of options with numerical input index (e.g.: 0, 1, 2..)
     for (int i=0; i<options.length; i++) {
       printOption((i+1)+". "+options[i]);
     }
@@ -57,8 +66,8 @@ public abstract class View {
     printOption(exitOpt);
   }
 
-  // print option lists that do not use numerical input index
   protected void printCustomOptions(String[] options) {
+    // print option lists that do not use numerical input index (e.g.: [, ]..)
     for (int i=0; i<options.length; i++) {
       printOption(options[i]);
     }
@@ -67,17 +76,23 @@ public abstract class View {
   }
 
   private void printOption(String opt) {
+    // print each option
     int optLen = WIDTH-opt.length()-2-TAB;
     System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+opt+"%"+optLen+"s*\n", "", "", "");
   }
 
   protected void printCenteredHeader(String text) {
+    // print a line of text centered in the view
     System.out.printf(MARGIN_LEFT+"*", "");
+    // calculate space to leave on left
     int leftPadding = (WIDTH-text.length()-2-6)/2;
+    // print dashed line on left
     for (int i=0; i<leftPadding; i++) {
       System.out.print("-");
     }
+    // print the line of text in the middle
     System.out.printf("%3s%S%3s", "", text, "");
+    // print dashed line on right
     for (int i=0; i<leftPadding; i++) {
       System.out.print("-");
     }
@@ -85,18 +100,22 @@ public abstract class View {
   }
 
   protected void printCentered(String text, FontColors color) {
+    // print line of text without dashed lines using a given color
     System.out.printf(MARGIN_LEFT+"*", "");
-
+    // check if text length is odd or even
     int len = text.length();
+    // add a space if it's odd
     text = text + (len%2!=0 ? " " : "");
     int leftPadding = (WIDTH-len-2)/2;
-
+    // reset font color if a different color was used
     text = color.getValue()+text+FontColors.ANSI_RESET.getValue();
+    // print centered text
     System.out.printf("%"+leftPadding+"s"+text+"%"+leftPadding+"s", "", "");
     System.out.print("*\n");
   }
 
   protected void printStarBorder() {
+    // print a border of stars
     System.out.printf(MARGIN_LEFT, "");
     for (int i=0; i<WIDTH; i++) {
       System.out.print("*");
@@ -105,6 +124,7 @@ public abstract class View {
   }
 
   protected void printDashBorder() {
+    // print a border of dashes
     System.out.printf(MARGIN_LEFT+"*", "");
     for (int i=0; i<WIDTH-2; i++) {
       System.out.print("-");
@@ -113,6 +133,7 @@ public abstract class View {
   }
 
   protected void printOnlyBorder() {
+    // print only the stars for left and right border
     System.out.printf(MARGIN_LEFT+"*%"+(WIDTH-2)+"s*\n", "", "");
   }
 
@@ -121,11 +142,13 @@ public abstract class View {
   }
 
   protected void printUserPrompt(int optionCount) {
+    // print prompt for user to enter input when the option count is known
     String prompt = INPUT_PROMPT +"(0-"+optionCount+") : ";
     System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+prompt, "", "");
   }
 
   protected void printInputPrompt(String text) {
+    // print custom input prompt
     System.out.printf(MARGIN_LEFT+"*%"+TAB+"s"+text, "", "");
   }
 }

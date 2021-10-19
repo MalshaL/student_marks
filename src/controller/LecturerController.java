@@ -26,6 +26,7 @@ public class LecturerController implements Controller {
     public LecturerController(User loggedInUser) {
         this.setLoggedInUser(loggedInUser);
         lecturerHomeView = new LecturerHomeView();
+        // get the units taught by lecturer when user logs in
         this.setTeachingUnitsOfLecturer();
     }
 
@@ -59,10 +60,15 @@ public class LecturerController implements Controller {
         }
     }
 
+    /**
+     * This method is directly callable form outside.
+     * Handles main functionalities in the Lecturer View.
+     * @return Response object containing a response code
+     */
     public ResponseObject handle() {
         boolean systemExit = false;
         ResponseObject response = new ResponseObject();
-
+        // loops until user enters exit option
         while (!systemExit) {
             // show options for lecturer
             lecturerHomeView.displayView();
@@ -73,6 +79,7 @@ public class LecturerController implements Controller {
                     lecturerHomeView.promptUserChoice();
                     response = handleUserChoice();
                     invalidInput = false;
+                    // if user chooses to exit
                     if(response.getMessage().equals(ResponseCode.USER_EXIT)) {
                         systemExit = true;
                     }
@@ -86,7 +93,13 @@ public class LecturerController implements Controller {
         return response;
     }
 
+    /**
+     * Presents main menu for Lecturer and handles user inputs.
+     * @return Response object
+     * @throws InvalidInputException when user input is invalid
+     */
     private ResponseObject handleUserChoice() throws InvalidInputException {
+        // get user input
         String input = UserInput.getScanner().nextLine();
         // remove whitespace in input
         input = input.replaceAll("\\s","");
@@ -124,6 +137,10 @@ public class LecturerController implements Controller {
         return response;
     }
 
+    /**
+     * Handles system exit when user enters exit option
+     * @return Response object
+     */
     private ResponseObject handleSystemExit() {
         ResponseObject response = new ResponseObject();
         response.setMessage(ResponseCode.USER_EXIT);
@@ -131,6 +148,10 @@ public class LecturerController implements Controller {
         return response;
     }
 
+    /**
+     * Handles displaying the list of units taught by the lecturer
+     * @return Response Object
+     */
     private ResponseObject handleViewUnits() {
         ResponseObject response = new ResponseObject();
         // get the teaching units list of lecturer
@@ -140,15 +161,21 @@ public class LecturerController implements Controller {
                 .stream()
                 .map(unit -> getUnitName(unit.getUnitId()))
                 .collect(Collectors.toList());
-        // print unit list
+        // show unit list
         lecturerHomeView.displayUnitData(teachingUnits, unitNameList);
         // wait for user to press enter after viewing results
         UserInput.getScanner().nextLine();
+        // set response
         response.setObject(teachingUnits);
         response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
         return response;
     }
 
+    /**
+     * Utility method to get Unit name given a unit ID
+     * @param unitId ID of the unit to search
+     * @return unit name
+     */
     private String getUnitName(String unitId) {
         for (Unit unit: DataController.getInstance().getUnitList()) {
             if (unit.getUnitId().equals(unitId)) {
@@ -158,10 +185,18 @@ public class LecturerController implements Controller {
         return null;
     }
 
+    /**
+     * Handles displaying grades for each unit taught by the lecturer
+     * @return Response Object
+     */
     private ResponseObject handleViewGrades() {
-        return showUnitOptions(true);
+        return showUnitOptions( true);
     }
 
+    /**
+     * Handles displaying grades of a single student
+     * @return Response Object
+     */
     private ResponseObject handleStudentGrades() {
         ResponseObject response = new ResponseObject();
         // get the student list
@@ -225,13 +260,20 @@ public class LecturerController implements Controller {
         return response;
     }
 
+    /**
+     * Handles updating grades of students taught by the lecturer
+     * @return Response Object
+     */
     private ResponseObject handleUpdateGrades() {
-        ResponseObject response = new ResponseObject();
-        showUnitOptions(false);
-
-        return null;
+        return showUnitOptions(false);
     }
 
+    /**
+     * Utility method used to display units for the user to select
+     * and prompts to display grades or update grades
+     * @param showUnitGrades if true, grades are displayed in read-only mode
+     * @return Response Object
+     */
     private ResponseObject showUnitOptions(boolean showUnitGrades) {
         ResponseObject response = new ResponseObject();
         // get the teaching units list of lecturer
@@ -278,8 +320,14 @@ public class LecturerController implements Controller {
                                 // display grades for the selected unit
                                 displayUnitGrades(unitId, unitName, enrolledUnits);
                             } else {
-                                // give option to add/update grades of students for the selected unit
-                                // display enrolments one by one to update marks
+                                if (enrolledUnits.isEmpty()) {
+                                    // no students enrolled in selected unit
+                                    response.setMessage(ResponseCode.EMPTY_LIST);
+                                    lecturerHomeView.printUserChoiceInfo(response);
+                                    invalidInput = true;
+                                } else {
+                                    response = updateUnitGrades(enrolledUnits, unitId, unitName);
+                                }
                             }
                         }
                         response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
@@ -297,6 +345,96 @@ public class LecturerController implements Controller {
         return response;
     }
 
+    private ResponseObject updateUnitGrades(List<EnrolledUnit> enrolledUnits, String unitId, String unitName) {
+        ResponseObject response = new ResponseObject();
+        // give option to add/update grades of students for the selected unit
+        boolean goToPrev = false;
+        // index of the enrollment being displayed
+        int currentIndex = 0;
+        while (!goToPrev) {
+            // selected enrollment
+            EnrolledUnit enrolledUnit = enrolledUnits.get(currentIndex);
+            // get student in the selected unit
+            Person student = getEnrolledStudent(enrolledUnit.getStudentId());
+            // display enrolments one by one to update marks
+            lecturerHomeView.displayStudentMarkUpdateView(student,
+                    unitId, unitName, enrolledUnit);
+            // loop till user enters valid input
+            boolean invalidMark = true;
+            // create list of valid inputs
+            while (invalidMark) {
+                try {
+                    // prompt user to enter marks
+                    lecturerHomeView.promptUserChoice("Enter mark : ");
+                    // get user input and remove whitespace
+                    String markString = UserInput.getScanner().nextLine()
+                            .replaceAll("\\s", "");
+                    double marksInput = Double.parseDouble(markString);
+                    if (0 <= marksInput && marksInput <= 100) {
+                        invalidMark = false;
+                        // set marks in enrolled unit
+                        enrolledUnit.setMark(marksInput);
+                        // get unit with updated grade
+                        EnrolledUnit enrolledUnitUpdated = saveNewMark(enrolledUnit);
+                        // display updated unit
+                        lecturerHomeView.displayUpdatedUnit(enrolledUnitUpdated);
+                    } else {
+                        // handle invalid input
+                        response.setMessage(ResponseCode.INVALID_INPUT);
+                        lecturerHomeView.printUserChoiceError(response);
+                    }
+                } catch (NumberFormatException e) {
+                    // handle invalid input
+                    response.setMessage(ResponseCode.INVALID_INPUT);
+                    lecturerHomeView.printUserChoiceError(response);
+                }
+            }
+            // display menu to select next enrollment to edit
+            lecturerHomeView.displayStudentMenu(currentIndex, enrolledUnits.size());
+            // loop till user enters valid input
+            boolean invalidOption = true;
+            // create list of valid inputs
+            List<String> validInputs = getValidStudentMenuInputs(currentIndex, enrolledUnits.size());
+            while (invalidOption) {
+                // print input prompt to user
+                lecturerHomeView.promptUserChoice("Enter your choice : ");
+                // get user input
+                String inputChoice = UserInput.getScanner().nextLine();
+                // remove whitespace in input
+                inputChoice = inputChoice.replaceAll("\\s", "");
+                // if input is valid
+                if (validInputs.contains(inputChoice)) {
+                    invalidOption = false;
+                    response.setMessage(ResponseCode.DATA_QUERY_SUCCESSFUL);
+                    switch (inputChoice) {
+                        case "0":
+                            // if user has selected to cancel and go back
+                            goToPrev = true;
+                            break;
+                        case "[":
+                            // prev student
+                            currentIndex = currentIndex - 1;
+                            break;
+                        case "]":
+                            // next student
+                            currentIndex += 1;
+                            break;
+                    }
+                } else {
+                    response.setMessage(ResponseCode.INVALID_INPUT);
+                    lecturerHomeView.printUserChoiceError(response);
+                }
+            }
+        }
+        return response;
+    }
+
+    /**
+     * Utility method to show grades of a selected unit
+     * @param unitId selected unit Id
+     * @param unitName selected unit name
+     * @param enrolledUnits list of enrollments for the unit
+     */
     private void displayUnitGrades(String unitId, String unitName, List<EnrolledUnit> enrolledUnits) {
         // get average mark for the unit
         double avg = getAverageUnitMark(enrolledUnits);
@@ -307,6 +445,12 @@ public class LecturerController implements Controller {
         UserInput.getScanner().nextLine();
     }
 
+    /**
+     * Utility method to get valid set of inputs when looping through list
+     * @param currentIndex current index of the list
+     * @param studentCount total count of the list
+     * @return valid list of inputs
+     */
     private List<String> getValidStudentMenuInputs(int currentIndex, int studentCount) {
         List<String> validInputs = new ArrayList<>();
         validInputs.add("0");
@@ -324,6 +468,11 @@ public class LecturerController implements Controller {
         return validInputs;
     }
 
+    /**
+     * Utility method to get the list of units given a list of unitIds
+     * @param unitIds list of unit Ids
+     * @return list of units
+     */
     private List<Unit> getUnitsInList(List<String> unitIds) {
         // get all units saved in the system
         List<Unit> allUnits = DataController.getInstance().getUnitList();
@@ -339,6 +488,11 @@ public class LecturerController implements Controller {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get list of enrollments given a unit Id
+     * @param unitId unit Id to search
+     * @return List of enrollments
+     */
     private List<EnrolledUnit> getEnrolledUnits(String unitId) {
         // get all enrolled units saved in the system
         List<EnrolledUnit> units = DataController.getInstance().getEnrolledUnits();
@@ -350,11 +504,93 @@ public class LecturerController implements Controller {
         return units.stream().filter(unit -> unit.getUnitId().equals(unitId)).collect(Collectors.toList());
     }
 
-    private double getAverageUnitMark(List<EnrolledUnit> units) {
-        double total = units.stream().mapToDouble(EnrolledUnit::getMark).sum();
-        return total/units.size();
+    /**
+     * Get details of student given studentId
+     * @param studentId studentId
+     * @return Student wrapped in a Person object
+     */
+    private Person getEnrolledStudent(String studentId) {
+        Optional<Person> student = DataController.getInstance().getStudentList().stream()
+                .filter(s->s.getId().equals(studentId))
+                .findFirst();
+        if (student.isPresent()) {
+            return student.get();
+        }
+        return null;
     }
 
+    /**
+     * Updates the new mark input by the user
+     * @param unit enrollment to update
+     * @return Updated enrollment
+     */
+    private EnrolledUnit saveNewMark(EnrolledUnit unit) {
+        // set grade for the marks
+        unit.setGrade(getGradeForMark(unit.getMark()));
+        // get the complete enrolled unit list
+        List<EnrolledUnit> units = DataController.getInstance().getEnrolledUnits();
+        // iterate to replace updated unit
+        ListIterator<EnrolledUnit> iterator = units.listIterator();
+        while (iterator.hasNext()) {
+            EnrolledUnit enrolledUnit = iterator.next();
+            // filter to find the unit
+            if (enrolledUnit.getUnitId().equals(unit.getUnitId()) &&
+                    enrolledUnit.getStudentId().equals(unit.getStudentId()) &&
+                    enrolledUnit.getCourseId().equals(unit.getCourseId()) &&
+                    enrolledUnit.getSemesterId().equals(unit.getSemesterId())) {
+                // replace unit
+                iterator.set(unit);
+            }
+        }
+        return unit;
+    }
+
+    /**
+     * get the Grade for the updated mark
+     * @param mark mark input by user
+     * @return new Grade
+     */
+    private Grade getGradeForMark(double mark) {
+        // get the grade for the given mark
+        Grade[] allGrades = Grade.values();
+        for (Grade g: allGrades) {
+            // check if the mark is within range
+            if (mark >= g.getLowerBound() && mark <= g.getHigherBound()) {
+                return g;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the average mark for a unit
+     * @param units list of enrollments
+     * @return average mark
+     */
+    private double getAverageUnitMark(List<EnrolledUnit> units) {
+        double total = 0;
+        int unitCount = 0;
+        for (EnrolledUnit unit: units) {
+            // if the grade is available for the unit
+            if (!unit.getGrade().equals(Grade.NA)) {
+                // get the marks for the unit
+                total += unit.getMark();
+                unitCount += 1;
+            }
+        }
+        // prevent division by zero
+        if (unitCount>0) {
+            return total/unitCount;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Calculates the GPA of a student
+     * @param units enrollments of a student
+     * @return gpa value
+     */
     private double calculateGPA(List<EnrolledUnit> units) {
         double creditTotal = 0;
         double pointTotal = 0;
@@ -362,14 +598,24 @@ public class LecturerController implements Controller {
             return 0;
         }
         for (EnrolledUnit unit: units) {
-            int credits = getUnitCredits(unit.getUnitId());
-            creditTotal += credits;
-            pointTotal += unit.getGrade().getGradeValue()*credits;
+            // if the grade is available for the unit
+            if (!unit.getGrade().equals(Grade.NA)) {
+                // get the number of credit points for the unit
+                int credits = getUnitCredits(unit.getUnitId());
+                creditTotal += credits;
+                pointTotal += unit.getGrade().getGradeValue() * credits;
+            }
         }
         return pointTotal/creditTotal;
     }
 
+    /**
+     * Get the number of credits for a unit to calculate GPA
+     * @param unitId unit Id to get credits
+     * @return credit points of the unit
+     */
     private int getUnitCredits(String unitId) {
+        // filter to find the unit and get the number of credits
         Optional<Integer> val = DataController.getInstance().getUnitList().stream()
                 .filter(unit -> unit.getUnitId().equals(unitId))
                 .map(Unit::getCredits)

@@ -9,7 +9,6 @@ package controller;
 
 
 import model.*;
-import view.*;
 
 
 public class HomeController implements Controller {
@@ -29,14 +28,16 @@ public class HomeController implements Controller {
     }
 
     public ResponseObject handle() {
+        // handle logged in user according to user type
         User.UserLevel userLevel = loggedInUser.getUserLevel();
         if (userLevel.equals(User.UserLevel.LECTURER)) {
             LecturerController lecturerController = new LecturerController(loggedInUser);
             return lecturerController.handle();
         } else {
-            System.out.println("none");
+            ResponseObject response = new ResponseObject();
+            response.setMessage(ResponseCode.USER_EXIT);
+            return response;
         }
-        return null;
     }
 
 }

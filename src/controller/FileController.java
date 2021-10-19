@@ -1,3 +1,9 @@
+// *****************************************************************
+//   FileController.java
+//
+//   This file contains the functions to handle file manipulation.
+// *****************************************************************
+
 package controller;
 
 import model.*;
@@ -40,12 +46,15 @@ public class FileController implements Controller {
 
     public void writeUserData(List<User> userList, boolean append) throws IOException {
         String dataStream = "";
+        // add csv headers if writing for the first time
         if (!append) {
             dataStream = getUserHeaders() + ROW_SEPARATOR;
         }
+        // create a string with all data
         dataStream = dataStream + userList.stream()
                 .map(User::getCsvRow)
                 .collect(Collectors.joining(ROW_SEPARATOR));
+        // write data in file
         writeData(dataStream, USER_FILE, append);
     }
 
@@ -127,10 +136,15 @@ public class FileController implements Controller {
     }
 
     private void writeData(String dataStream, String fileName, boolean append) throws IOException {
+        // write data in file
         try {
+            // open file with buffered writer
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(fileName), append));
+            // write the data string
             bufferedWriter.write(dataStream);
+            // add a new line
             bufferedWriter.newLine();
+            // flush the stream and close writer
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException e) {
@@ -151,7 +165,6 @@ public class FileController implements Controller {
         List<Person> personList = new ArrayList<>();
 
         // read data and create objects according to user type
-        String fileName = "";
         if(personType.equals(User.UserLevel.LECTURER)) {
             List<String[]> itemList = readData(LECTURER_FILE);
             for (String[] items: itemList) {
@@ -213,17 +226,21 @@ public class FileController implements Controller {
     }
 
     private List<String[]> readData(String fileName) throws IOException {
+        // read data from file
         List<String[]> itemList = new ArrayList<>();
         try {
+            // read data using buffered reader
             BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
             String currentLine;
             boolean isHeaderRow = true;
             while((currentLine=bufferedReader.readLine())!=null) {
+                // read each line and split
                 String[] items = currentLine.split(CELL_SEPARATOR);
                 if (isHeaderRow) {
                     // skip the first line with headers
                     isHeaderRow = false;
                 } else {
+                    // add the array of items into a list
                     itemList.add(items);
                 }
             }
@@ -231,10 +248,12 @@ public class FileController implements Controller {
         } catch (IOException e) {
             throw new IOException();
         }
+        // return all data
         return itemList;
     }
 
     private String getUserHeaders() {
+        // returns the string with csv file headers for user data
         return "User Id" + FileController.CELL_SEPARATOR +
                 "Username" + FileController.CELL_SEPARATOR +
                 "Password" + FileController.CELL_SEPARATOR +

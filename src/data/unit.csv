@@ -1,7 +1,7 @@
 Unit Id,Unit Name,Credits
 COMP1001,Programming in Java,10
-COMP2001,Object Oriented Programming in Java,10
+COMP2001,Data Structures,10
 COMP2002,Functional Programming,10
-COMP1002,Programming in Python,10
-STAT1001,Statistics and Probability,10
-COMP3001,Programming for Data Science,10
+COMP1002,Programming in R,10
+STAT1001,Statistics,10
+COMP3001,Data Science,10
