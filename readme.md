@@ -28,7 +28,7 @@ The application was designed making use of object-oriented programming principle
 Java. The main user of the application was identified as Lecturer at the university. The users could perform the 
 following operations on the system.
 
-![usecases.png](images/usecases.png)
+![<img src="images/usecases.png" width="50px"/>](images/usecases.png)
 
 ### Login Screen
 
@@ -58,6 +58,6 @@ Colors added using ANSI codes to enhance the display of error and information me
 
 ![sys6.png](images/sys6.png)
 
-## MVC Based design
+### MVC Based design
 
 ![sys7.png](images/sys7.png)
