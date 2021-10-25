@@ -18,8 +18,9 @@ java StudentMarksSystem
 
 To login, the following username and password combinations can be used.
 
-John, john
-Anne, anne
+`John, john`
+
+`Anne, anne`
 
 ## Functionalities in the Application
 
