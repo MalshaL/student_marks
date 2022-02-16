@@ -1,9 +1,7 @@
 ## Student Marks System
 
-This application was developed for the purpose of storing 
-and managing student marks in a university. It was implemented using Java, with a command line-based interface which 
-users could use to interact with the system. All the records related to the application were designed to be stored 
-and retrieved from csv files.
+This application stores and manages student marks in a university. It's implemented using Java, with a command line-based interface for 
+users to interact with the system. All the records related to the application are stored and retrieved from csv files.
 
 ## Run the project
 
@@ -16,7 +14,7 @@ javac StudentMarksSystem.java
 java StudentMarksSystem
 ```
 
-To login, the following username and password combinations can be used.
+To login, use the following username and password combinations.
 
 `John, john`
 
@@ -24,9 +22,8 @@ To login, the following username and password combinations can be used.
 
 ## Functionalities in the Application
 
-The application was designed making use of object-oriented programming principles and language aspects available in 
-Java. The main user of the application was identified as Lecturer at the university. The users could perform the 
-following operations on the system.
+Object-oriented programming principles and Java language aspects were used when designing the application. The main user of the application is a Lecturer at the university.
+Users can perform following operations within the system.
 
 ![<img src="images/usecases.png" width="50px"/>](images/usecases.png)
 
